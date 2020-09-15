@@ -1,0 +1,148 @@
+*{
+    font-family: sans-serif;
+}
+
+body, section.left, section.left .leftForm, section.right .card .content{
+    display: flex;
+}
+
+body{
+    height: 100vh;
+    margin: 0;
+}
+
+.danger{
+    color: red;
+}
+
+button{
+    border: none;
+
+    padding: .5rem 2rem;
+   
+    background: #28437a;
+    color: white;
+
+    cursor: pointer;
+
+}
+
+a{
+    text-decoration: none;
+    color: black;
+}
+
+section.left{
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+section.left h1.title{
+    text-align: center;
+}
+
+form input{
+    width: 100%;
+    margin-top: 1rem;
+}
+
+form input, input[type="submit"]{
+    border: none;
+    border-bottom: 1px solid black;
+}
+
+form label, input[type="submit"]{
+    margin: 2rem;
+}
+
+form input[type="submit"]{
+    width: max-content;
+    padding: .5rem 2rem;
+    align-self: center;
+
+    color: white;
+    background: #28437a;
+
+}
+
+section.left, form.leftForm{
+    flex-direction: column;
+}
+
+section.right{
+    flex-grow: 7;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 2rem 0;
+
+    background: url('./images/23284.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    box-shadow: inset 10px 0 10px -10px black;
+
+    overflow-y: scroll;
+}
+
+section.right .contribution{
+    position: absolute;
+
+}
+
+section.right .contribution{
+    bottom: 10px;
+    right: 10px;
+}
+
+section.right button.logout{
+    width: max-content;
+    align-self: flex-end;
+    padding: .5rem 1rem;
+    margin-bottom: 1rem;
+}
+
+section.right .cardsHolder{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 20px;
+}
+
+section.right .card{
+    height: min-content;
+    box-shadow: 3px 3px 6px #28437a;
+}
+
+section.right .card span.removeCard{
+    position: relative;
+    top: 5px;
+    left: 5px;
+
+    font-weight: bolder;
+
+    color: #28437a;
+
+    cursor: pointer;
+}
+
+section.right .card span.temp{
+    font-weight: lighter;
+}
+
+section.right .card span.temp::after{
+    content: '°C';
+}
+
+section.right .card .content{
+    text-align: center;
+    justify-content: center;
+}
+
+section.right .card .content p{
+    width: max-content;
+}
+
+section.right .card h2{
+    text-align: center;
+}
