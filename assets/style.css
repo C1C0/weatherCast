@@ -11,8 +11,20 @@ body{
     margin: 0;
 }
 
+.notification{
+    margin: .1rem;
+}
+
 .danger{
     color: red;
+}
+
+.success{
+    color: green;
+}
+
+.warn{
+    color: rgb(241, 157, 0);
 }
 
 button{
@@ -57,6 +69,8 @@ form label, input[type="submit"]{
 }
 
 form input[type="submit"]{
+    width: -webkit-max-content;
+    width: -moz-max-content;
     width: max-content;
     padding: .5rem 2rem;
     align-self: center;
@@ -97,6 +111,8 @@ section.right .contribution{
 }
 
 section.right button.logout{
+    width: -webkit-max-content;
+    width: -moz-max-content;
     width: max-content;
     align-self: flex-end;
     padding: .5rem 1rem;
@@ -110,6 +126,8 @@ section.right .cardsHolder{
 }
 
 section.right .card{
+    height: -webkit-min-content;
+    height: -moz-min-content;
     height: min-content;
     box-shadow: 3px 3px 6px #28437a;
 }
@@ -140,6 +158,8 @@ section.right .card .content{
 }
 
 section.right .card .content p{
+    width: -webkit-max-content;
+    width: -moz-max-content;
     width: max-content;
 }
 

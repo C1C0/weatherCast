@@ -1,18 +1,22 @@
 <?php
-$dangerMessage = login();
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    login();
+}
 ?>
 
 <h1 class="title">LOGIN</h1>
-<?php if ($dangerMessage != "") {
-    notifDanger($dangerMessage);
+<?php if (!empty($dangerMessages)) {
+    notifDanger($dangerMessages);
 } ?>
-<form action="" method="post" class="leftForm sign">
-    <input type="text" hidden name="login" value="true">
+<form method="post" class="leftForm sign">
     <label for="email">E-mail:
         <input type="email" name="email">
     </label>
 
-    <label for="password">Password: <input type="password" name="password"></label>
+    <label for="password">Password:
+        <input type="password" name="password">
+    </label>
 
     <input type="submit" value="SUBMIT">
 </form>

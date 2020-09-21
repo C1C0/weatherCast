@@ -1,6 +1,6 @@
 <h1 class="title">ADD A LOCATION</h1>
-<?php if ($dangerMessage != "") {
-    notifDanger($dangerMessage);
+<?php if ($dangerMessages != "") {
+    notifDanger($dangerMessages);
 } ?>
 <form class="leftForm adding" id="locationForm">
     <label for="location">Location: 

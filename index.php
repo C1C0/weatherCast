@@ -1,9 +1,8 @@
 <?php
 include './includes/config.php';
-include './includes/notifications.php';
 include './includes/functions.php';
 
-$dangerMessage = null;
+$dangerMessages = array();
 
 // print_r($_SESSION['user']);
 

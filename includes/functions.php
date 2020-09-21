@@ -2,64 +2,112 @@
 
 function login()
 {
-    global $conn;
-    if ($_POST && isset($_POST['login'])) {
+    global $dangerMessages;
 
-        $stmt = $conn->prepare('SELECT * FROM users WHERE email=:email AND password=:password');
-        $stmt->bindParam(':email', $_POST['email']);
-        $stmt->bindParam(':password', $_POST['password']);
-        $stmt->execute();
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
 
-        if (!count($result)) {
-            return ("Incorect credentials");
-        }
+    //Check email and Password
+    if (empty($email) || empty($password)) {
+        empty($email) ? array_push($dangerMessages, 'Email Required') : '';
+        empty($password) ? array_push($dangerMessages, 'Password Required') : '';
+        return;
+    }
 
+    //Select user
+    $result = connectToDB(
+        'SELECT * FROM users WHERE email="' . $_POST["email"] . '" AND password="' . $_POST['password'] . '"',
+        'SELECT'
+    );
+
+    //Check whether user found; if so - redirect and upload to Session
+    if (!count($result)) {
+        array_push($dangerMessages, 'Incorrect Credentials');
+    } else {
         $_SESSION['user'] = $result[0];
         header('Location: index.php');
         exit;
     }
 }
 
-
 function signup()
 {
     global $conn;
-    if ($_POST && isset($_POST['signup'])) {
-        //check passwords
-        if ($_POST['password'] != $_POST['passwordConfirm'])
-            return "Passwords are not matching";
+    global $dangerMessages;
 
-        //check email address
-        $stmt = $conn->prepare('SELECT email FROM users WHERE email=:email');
-        $stmt->bindParam('email', $_POST['email']);
-        $stmt->execute();
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if ($result != [])
-            return "This email address has been already used.";
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
+    $passwordConfirm = trim($_POST['passwordConfirm']);
 
-        //Create new user
-        $stmt = $conn->prepare('INSERT INTO users(id, email, password) VALUES ("", :email, :password)');
-        $stmt->bindParam('email', $_POST['email']);
-        $stmt->bindParam('password', $_POST['password']);
-        $stmt->execute();
-
-        $stmt = $conn->prepare('SELECT * FROM users WHERE id=:id');
-        $stmt->bindParam('id', $conn->lastInsertId());
-        $stmt->execute();
-
-        $_SESSION['user'] = $stmt->fetchAll(PDO::FETCH_ASSOC)[0];
-
-        header('Location: index.php');
-        exit;
+    //Check input data presence
+    if (empty($email) || empty($password) || empty($passwordConfirm)) {
+        empty($email) ? array_push($dangerMessages, 'Email Required') : '';
+        empty($password) ? array_push($dangerMessages, 'Password Required') : '';
+        empty($passwordConfirm) ? array_push($dangerMessages, 'Confirming password Required') : '';
+        return;
     }
+
+    //check if are passwords equal
+    if ($password !== $passwordConfirm) {
+        array_push($dangerMessages, 'Passwords have to be identical');
+        return;
+    }
+
+    //check email address if not already registered
+    $result = connectToDB(
+        'SELECT email FROM users WHERE email="' . $_POST["email"] . '"',
+        'SELECT'
+    );
+
+    if ($result != []) {
+        array_push($dangerMessages, "This email address has been already used.");
+        return;
+    }
+
+    //Create new user
+    connectToDB(
+        'INSERT INTO users(id, email, password) VALUES ("", "' . $_POST['email'] . '","' . $_POST['password'] . '")'
+    );
+
+    //Get newly added user by ID
+    $result = connectToDB(
+        'SELECT * FROM users WHERE id=' . $conn->lastInsertId(),
+        'SELECT'
+    );
+
+    //start session and redirect
+    $_SESSION['user'] = $result[0];
+    header('Location: index.php');
+    exit;
 }
 
-function getCities(){
+function connectToDB($queryString, $type = '')
+{
     global $conn;
-    $stmt = $conn->prepare('SELECT cities FROM users WHERE id=:id');
-    $userId = $_SESSION['user']['id'];
-    $stmt->bindParam('id', $userId);
+
+    //prepare query
+    $stmt = $conn->prepare($queryString);
+
+    //execute
     $stmt->execute();
-    return json_encode($stmt->fetchAll(PDO::FETCH_ASSOC)[0]);
+
+    if ($type === 'SELECT')
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getCertainData($column)
+{
+    //get certain data from DB and insert them into JS script
+    return json_encode(connectToDB(
+        'SELECT ' . $column . ' FROM users WHERE id=' . $_SESSION['user']['id'],
+        'SELECT'
+    )[0]);
+}
+
+//show notification
+function notifDanger($messages)
+{
+    foreach ($messages as $message) {
+        echo "<p class='danger'>$message</p>";
+    }
 }

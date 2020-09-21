@@ -2,9 +2,8 @@
 
 <div class="cardsHolder" id="cards">
     <script type="text/javascript">
-        onGetCities(<?php print_r(getCities()) ?>);
-        showWeatherForAllCities();
+        _cities = onGetCertainData(<?php print_r(getCertainData('cities')) ?>);
+        _lastUpdate = new Date(onGetCertainData(<?php print_r(getCertainData('lastUpdate'))?>));
+        _citiesData = showWeatherForAllCities(_cities, _citiesData);
     </script>
-
-
 </div>

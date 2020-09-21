@@ -1,15 +1,16 @@
 <?php
 
-$dangerMessage = signup();
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    signup();
+}
 
 ?>
 
 <h1 class="title">SIGN UP</h1>
-<?php if ($dangerMessage != "") {
-    notifDanger($dangerMessage);
+<?php if ($dangerMessages != "") {
+    notifDanger($dangerMessages);
 } ?>
 <form action="" method="post" class="leftForm sign">
-    <input type="text" hidden name="signup" value="true">
     <label for="email">E-mail:
         <input type="email" name="email">
     </label>
