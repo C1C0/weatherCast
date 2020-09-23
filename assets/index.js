@@ -19,8 +19,13 @@ let updatingLSInterval;
  */
 function onGetCertainData(parseableObject, type = "") {
   let stringValue = Object.entries(parseableObject)[0][1];
+  console.log(stringValue);
   try {
-    if (stringValue === undefined || stringValue === null || stringValue === '') {
+    if (
+      stringValue === undefined ||
+      stringValue === null ||
+      stringValue === ""
+    ) {
       switch (type) {
         case "array":
           return [];
@@ -120,7 +125,7 @@ function showWeatherForAllCities(cities, citiesData) {
         getOnScreen("cards", htmlResponseCard(locationData));
       });
 
-      sendToServer("lastUpdate", "true");
+      sendToServer("lastUpdate", new Date().getTime());
     });
   }
 

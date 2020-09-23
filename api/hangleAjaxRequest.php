@@ -23,8 +23,11 @@ if (isset($_POST['cities']) && !empty($_POST['cities'])) {
 if (isset($_POST['lastUpdate']) && !empty($_POST['lastUpdate'])) {
     //updates lastUpdate
 
+    //server time may vary based on server location
+    $lastUpdate = $_POST['lastUpdate'];
+
     connectToDB(
-        "UPDATE users SET lastUpdate='" . date("Y-m-d H:i:s") . "' WHERE id=" . $_SESSION['user']['id']
+        "UPDATE users SET lastUpdate='" . $lastUpdate . "' WHERE id=" . $_SESSION['user']['id']
     );
 
     http_response_code(200);
