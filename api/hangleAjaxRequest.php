@@ -3,6 +3,8 @@
 include '../includes/config.php';
 include '../includes/functions.php';
 
+$success = false;
+
 
 if (isset($_POST['cities']) && !empty($_POST['cities'])) {
     //updates cities in DB
@@ -20,7 +22,6 @@ if (isset($_POST['cities']) && !empty($_POST['cities'])) {
 
 if (isset($_POST['lastUpdate']) && !empty($_POST['lastUpdate'])) {
     //updates lastUpdate
-    //2020-09-15 00:00:00
 
     connectToDB(
         "UPDATE users SET lastUpdate='" . date("Y-m-d H:i:s") . "' WHERE id=" . $_SESSION['user']['id']
@@ -30,6 +31,21 @@ if (isset($_POST['lastUpdate']) && !empty($_POST['lastUpdate'])) {
     echo json_encode(['code' => '200', 'message' => '"Last Update" time updated on server']);
     exit;
 }
+
+if (isset($_POST['citiesData']) && !empty($_POST['citiesData'])) {
+    //updates citiesData
+
+    $citiesData = $_POST['citiesData'];
+
+    connectToDB(
+        "UPDATE users SET citiesData='" . $citiesData . "' WHERE id=" . $_SESSION['user']['id']
+    );
+
+    http_response_code(200);
+    echo json_encode(['code' => '200']);
+    exit;
+}
+
 
 http_response_code(404);
 echo json_encode(['code' => '404', 'message' => 'Request could not be handled']);

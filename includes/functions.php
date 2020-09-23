@@ -16,18 +16,25 @@ function login()
 
     //Select user
     $result = connectToDB(
-        'SELECT * FROM users WHERE email="' . $_POST["email"] . '" AND password="' . $_POST['password'] . '"',
+        'SELECT * FROM users WHERE email="' . $email . '"',
         'SELECT'
     );
 
-    //Check whether user found; if so - redirect and upload to Session
+    //check presence of record in DB
     if (!count($result)) {
-        array_push($dangerMessages, 'Incorrect Credentials');
-    } else {
+        array_push($dangerMessages, 'This email address has not been found in database');
+        return;
+    };
+
+    //Check whether correct password provided; if so - redirect and upload to Session
+    if (password_verify($password, $result[0]['password'])) {
         $_SESSION['user'] = $result[0];
         header('Location: index.php');
-        exit;
+    } else {
+        array_push($dangerMessages, 'This email address has not been found in database');
     }
+
+    exit;
 }
 
 function signup()
@@ -55,7 +62,7 @@ function signup()
 
     //check email address if not already registered
     $result = connectToDB(
-        'SELECT email FROM users WHERE email="' . $_POST["email"] . '"',
+        'SELECT email FROM users WHERE email="' . $email . '"',
         'SELECT'
     );
 
@@ -64,9 +71,12 @@ function signup()
         return;
     }
 
+    //Hash password
+    $password = password_hash($password, PASSWORD_DEFAULT);
+
     //Create new user
     connectToDB(
-        'INSERT INTO users(id, email, password) VALUES ("", "' . $_POST['email'] . '","' . $_POST['password'] . '")'
+        'INSERT INTO users(id, email, password) VALUES ("", "' . $email . '","' . $password . '")'
     );
 
     //Get newly added user by ID

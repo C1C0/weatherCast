@@ -19,9 +19,8 @@ let updatingLSInterval;
  */
 function onGetCertainData(parseableObject, type = "") {
   let stringValue = Object.entries(parseableObject)[0][1];
-  console.log(stringValue);
   try {
-    if (stringValue === undefined || stringValue === null) {
+    if (stringValue === undefined || stringValue === null || stringValue === '') {
       switch (type) {
         case "array":
           return [];
@@ -82,24 +81,22 @@ function removeAlert() {
 /**
  * Loops through all visible cities and start individual fething
  * @param {string[]} cities Array of cities
- * @param {Object} citiesData Data which are included in Local Storage
+ * @param {object} citiesData Weather data of citise
+ * @returns {object[]} Weather data of citise
  */
-function showWeatherForAllCities(cities = [], citiesData) {
+function showWeatherForAllCities(cities, citiesData) {
   //one hour
   let minUpdateTime = 3600000;
   let timeDifference = Math.abs(_lastUpdate.getTime() - new Date().getTime());
 
   //if no cities provided, no need to run the function
-  if (!cities) return;
+  if (cities.length === 0) return;
 
-  citiesData = getFromLS("citiesData");
-
-  if (timeDifference > minUpdateTime || !citiesData) {
+  if (timeDifference > minUpdateTime || citiesData.length === 0) {
     //clear citiesData
     citiesData = [];
 
-    if (_cities.length !== 0) {
-      console.log(_cities);
+    if (cities.length !== 0) {
       showAlert(
         leftColumn,
         locationForm,
@@ -108,15 +105,15 @@ function showWeatherForAllCities(cities = [], citiesData) {
         "warn"
       );
       //loop through _cities and fetch data
-      _cities.forEach((city) => {
+      cities.forEach((city) => {
         APIFetchingPromisies.push(fetchCityData(city, citiesData));
       });
     }
 
     //when all data from API fetched, execute
     Promise.all(APIFetchingPromisies).then(() => {
-      // add to LS
-      addToLS("citiesData", citiesData);
+      // Update DB citiesData
+      sendToServer("citiesData", citiesData);
 
       //then loop through data from _citiesData and getOnScreen()
       citiesData.forEach((locationData) => {
@@ -133,48 +130,6 @@ function showWeatherForAllCities(cities = [], citiesData) {
   });
 
   return citiesData;
-}
-
-/**
- * Get data from local storage
- * @param {string} name Name of property in localStorage
- * @returns {any} Returns null or parsed item from LocalStorage if found some
- */
-function getFromLS(name) {
-  try {
-    return JSON.parse(localStorage.getItem(name));
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Stringifies data and pushes to localStorage
- * @param {string} name Name of property in localStorage
- * @param {any} data Data to stringify and pass to localStorage
- */
-function addToLS(name, data) {
-  try {
-    localStorage.setItem(name, JSON.stringify(data));
-  } catch (e) {
-    console.warn(e);
-  }
-}
-
-/**
- * Removes specified city from LocalStorage
- * @param {string} nameOfKey LocalStorage key
- * @param {*} specificCity City name which should be removed
- */
-function deleteSpecificFromLS(nameOfKey, specificCity) {
-  try {
-    _citiesData = _citiesData.filter((location) => {
-      return location.name.toLowerCase() != specificCity.toLowerCase();
-    });
-    addToLS(nameOfKey, _citiesData);
-  } catch (e) {
-    console.warn(e);
-  }
 }
 
 /**
@@ -203,7 +158,6 @@ function onAddCity(e) {
   //check if requested city is not already in cities array
   if (_cities.length !== 0) {
     let lowercasedCities = _cities.map((city) => city.toLowerCase());
-    console.log(lowercasedCities);
     if (lowercasedCities.includes(requestedCity.toLowerCase())) {
       showAlert(
         leftColumn,
@@ -223,7 +177,7 @@ function onAddCity(e) {
     getOnScreen("cards", htmlResponseCard(_lastAddedCity));
     sendToServer("cities", _cities);
     //add to LS
-    addToLS("citiesData", _citiesData);
+    sendToServer("citiesData", _citiesData);
   });
 
   //clear input value
@@ -250,11 +204,15 @@ function onDeleteCity(e) {
     return _city.toLowerCase() !== city.toLowerCase();
   });
 
-  //delete from LS
-  deleteSpecificFromLS("citiesData", city);
-
   //send server new array
   sendToServer("cities", _cities);
+
+  _citiesData = _citiesData.filter((location) => {
+    return location.name.toLowerCase() != city.toLowerCase();
+  });
+
+  //delete from LS
+  sendToServer("citiesData", _citiesData);
 }
 
 /**
@@ -294,15 +252,15 @@ function fetchCityData(city, citiesData) {
         resolve(weatherApi.location.name);
       })
       .catch((err) => {
-        console.log(err);
         err.then((errObject) => {
           reject(errObject);
-          showAlert(
-            leftColumn,
-            locationForm,
-            "locationFormMessage",
-            errObject.error.message
-          );
+          if (errObject.error.message)
+            showAlert(
+              leftColumn,
+              locationForm,
+              "locationFormMessage",
+              errObject.error.message
+            );
         });
       });
   });
@@ -311,7 +269,7 @@ function fetchCityData(city, citiesData) {
 /**
  * Send string array to PHP server with FormData
  * @param {string} paramName name for sending data
- * @param {string[]} data
+ * @param {any} data data which should be send to server
  */
 function sendToServer(paramName, data) {
   //create form data object
@@ -328,13 +286,14 @@ function sendToServer(paramName, data) {
       if (response.ok) return response.json();
     })
     .then((responseBody) => {
-      showAlert(
-        leftColumn,
-        locationForm,
-        "locationFormMessage",
-        responseBody.message,
-        "success"
-      );
+      if (responseBody.message)
+        showAlert(
+          leftColumn,
+          locationForm,
+          "locationFormMessage",
+          responseBody.message,
+          "success"
+        );
     });
 }
 

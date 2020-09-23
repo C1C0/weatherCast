@@ -17,11 +17,11 @@ $dangerMessages = array();
     <title>WEATHERCAST</title>
 
     <link rel="stylesheet" href="assets/style.css">
-    <script src="assets/main.js"></script>
+    <script src="assets/index.js"></script>
 </head>
 
 <body>
-<button class="<?php if(!isset($_SESSION['user'])){echo 'loginMode';}?> logout mobile" onclick="window.location.href='/logout.php'; localStorage.clear()">Log out</button>
+<button class="<?php if(!isset($_SESSION['user'])){echo 'loginMode';}?> logout mobile" onclick="window.location.href='/logout.php'">Log out</button>
     <section class="left" id="leftColumn">
         <?php
         if (isset($_SESSION['user'])) {
