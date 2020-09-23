@@ -21,6 +21,7 @@ $dangerMessages = array();
 </head>
 
 <body>
+<button class="<?php if(!isset($_SESSION['user'])){echo 'loginMode';}?> logout mobile" onclick="window.location.href='/logout.php'; localStorage.clear()">Log out</button>
     <section class="left" id="leftColumn">
         <?php
         if (isset($_SESSION['user'])) {
@@ -33,7 +34,7 @@ $dangerMessages = array();
             }
         }
         ?>
-        <p>
+        <p class="apiContribution">
 
             Powered by <a href="https://www.weatherapi.com/" title="Free Weather API">WeatherAPI.com</a>
             <a href="https://www.weatherapi.com/" title="Free Weather API"><img src='//cdn.weatherapi.com/v4/images/weatherapi_logo.png' alt="Weather data by WeatherAPI.com" border="0"></a>

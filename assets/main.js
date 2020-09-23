@@ -1,4 +1,4 @@
-let _api = "3d6c0...";
+let _api = "3d6c0c474c7e420596383154201509";
 let _cities = [];
 let _citiesData = [];
 let _lastUpdate;
@@ -14,12 +14,25 @@ let updatingLSInterval;
 /**
  * Return string or JSON parsed object
  * @param {String} parseableObject String which might contain parsable object
+ * @param {string} type What type of variable return if unable to parse object
+ * @returns {any[] | any{} | string }
  */
-function onGetCertainData(parseableObject) {
+function onGetCertainData(parseableObject, type = "") {
   let stringValue = Object.entries(parseableObject)[0][1];
+  console.log(stringValue);
   try {
+    if (stringValue === undefined || stringValue === null) {
+      switch (type) {
+        case "array":
+          return [];
+        case "object":
+          return {};
+        default:
+          return "";
+      }
+    }
     return JSON.parse(stringValue);
-  } catch {
+  } catch (e) {
     return stringValue;
   }
 }
@@ -82,22 +95,23 @@ function showWeatherForAllCities(cities = [], citiesData) {
   citiesData = getFromLS("citiesData");
 
   if (timeDifference > minUpdateTime || !citiesData) {
-    showAlert(
-      leftColumn,
-      locationForm,
-      "locationFormMessage",
-      "Getting data from <b>WeatherAPI</b> server...",
-      "warn"
-    );
-
     //clear citiesData
     citiesData = [];
 
-    if (_cities)
+    if (_cities.length !== 0) {
+      console.log(_cities);
+      showAlert(
+        leftColumn,
+        locationForm,
+        "locationFormMessage",
+        "Getting data from <b>WeatherAPI</b> server...",
+        "warn"
+      );
       //loop through _cities and fetch data
       _cities.forEach((city) => {
         APIFetchingPromisies.push(fetchCityData(city, citiesData));
       });
+    }
 
     //when all data from API fetched, execute
     Promise.all(APIFetchingPromisies).then(() => {
@@ -109,7 +123,7 @@ function showWeatherForAllCities(cities = [], citiesData) {
         getOnScreen("cards", htmlResponseCard(locationData));
       });
 
-      sendToServer("lastUpdate", "fsafasf");
+      sendToServer("lastUpdate", "true");
     });
   }
 
@@ -187,18 +201,18 @@ function onAddCity(e) {
   }
 
   //check if requested city is not already in cities array
-  if (
-    _cities
-      .map((city) => city.toLowerCase())
-      .includes(requestedCity.toLowerCase())
-  ) {
-    showAlert(
-      leftColumn,
-      locationForm,
-      "locationFormMessage",
-      `You already see data for '${requestedCity}'`
-    );
-    return;
+  if (_cities.length !== 0) {
+    let lowercasedCities = _cities.map((city) => city.toLowerCase());
+    console.log(lowercasedCities);
+    if (lowercasedCities.includes(requestedCity.toLowerCase())) {
+      showAlert(
+        leftColumn,
+        locationForm,
+        "locationFormMessage",
+        `You already see data for '${requestedCity}'`
+      );
+      return;
+    }
   }
 
   //create call to weatherAPI server

@@ -20,4 +20,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <input type="submit" value="SUBMIT">
 </form>
-<a href="/?signup=true">Switch to signup</a>
+<a href="/?signup=true">SIGNUP</a>

@@ -166,3 +166,50 @@ section.right .card .content p{
 section.right .card h2{
     text-align: center;
 }
+
+.mobile, button.loginMode{
+    display: none;
+}
+
+.PC{
+    display: block;
+}
+
+@media (max-width: 800px){
+    body{
+        height: auto;
+        flex-direction: column;
+    }
+
+    section.right{
+        flex-grow: 0;
+        padding: 0;
+        box-shadow: none;
+    }
+
+    section.right .cardsHolder{
+        display: block;
+        width: 90%;
+        margin: auto;
+    }
+
+    section.right .cardsHolder > .card{
+        margin: 1rem;
+    }
+
+    form.leftForm label{
+        margin: 1rem 0 0 0 ;
+    }
+
+    .apiContribution{
+        display: none;
+    }
+
+    .PC{
+        display: none;
+    }
+
+    .mobile{
+        display: block;
+    }
+}
